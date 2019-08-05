@@ -2,10 +2,12 @@ package drawing;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 class MyDrawingWindow extends Frame implements WindowListener,MouseListener,KeyListener {
 
 	char state;
+	ArrayList<Shape> shapes;
 	
 	public MyDrawingWindow()
 	{
@@ -13,12 +15,20 @@ class MyDrawingWindow extends Frame implements WindowListener,MouseListener,KeyL
 		this.addMouseListener(this);
 		this.addKeyListener(this);
 		state='r';
+		shapes=new ArrayList<Shape>();
 	}
 	public void paint(Graphics g)
 	{
+		Shape s;
+		int i;
 		super.paint(g);
 		
-		g.drawRect(10, 10, 300, 300);
+		for(i=0;i<shapes.size();i++)
+		{
+			s=shapes.get(i);
+			s.draw(g);
+		}
+		//g.drawRect(10, 10, 300, 300);
 	}
 
 	@Override
@@ -66,14 +76,30 @@ class MyDrawingWindow extends Frame implements WindowListener,MouseListener,KeyL
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		Graphics g;
+		int x[]=new int[3];
+		int y[]=new int[3];
 		g=this.getGraphics();
 		switch(state)
 		{
 		case 'r':
 			g.drawRect(e.getX(), e.getY(),30 , 30);
+			shapes.add(new Square(e.getX(), e.getY(),30));
 			break;
 		case 'c':
 			g.drawOval(e.getX(), e.getY(),30 , 30);
+			shapes.add(new Circle(e.getX(), e.getY(),15));
+			break;
+		case 't':
+			x[0]=e.getX()-25;
+			y[0]=e.getY();
+			
+			x[1]=e.getX()+25;
+			y[1]=e.getY();
+			
+			x[2]=e.getX();
+			y[2]=e.getY()-25;
+			
+			g.drawPolygon(x,y,3);
 			break;
 		}
 
@@ -109,7 +135,10 @@ class MyDrawingWindow extends Frame implements WindowListener,MouseListener,KeyL
 			break;
 		case 'r':
 			state='r';
-			break;			
+			break;
+		case 't':
+			state='t';
+			break;				
 		}
 	}
 	
